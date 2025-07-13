@@ -24,59 +24,65 @@ interface AccessibilityProviderProps {
 }
 
 export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ children }) => {
-  const [settings, setSettings] = useState<AccessibilitySettings>(defaultSettings)
-    // // Load settings from localStorage if available
-    // const saved = localStorage.getItem('accessibility-settings');
-    // return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings;
-  // });
+  const [settings, setSettings] = useState<AccessibilitySettings>(defaultSettings);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Effect to load settings from localStorage only on the client-side after mount
+  // Load settings from localStorage on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') { // Check if window (and thus localStorage) is available
+    if (typeof window !== 'undefined') {
       try {
         const saved = localStorage.getItem('accessibility-settings');
         if (saved) {
-          // Merge saved settings with defaults to ensure all properties exist
-          setSettings({ ...defaultSettings, ...JSON.parse(saved) });
+          const parsedSettings = JSON.parse(saved);
+          // Validate and merge with defaults
+          const validSettings = {
+            highContrast: typeof parsedSettings.highContrast === 'boolean' ? parsedSettings.highContrast : defaultSettings.highContrast,
+            textSize: ['small', 'medium', 'large', 'extraLarge'].includes(parsedSettings.textSize) ? parsedSettings.textSize : defaultSettings.textSize,
+            voiceCommandsEnabled: typeof parsedSettings.voiceCommandsEnabled === 'boolean' ? parsedSettings.voiceCommandsEnabled : defaultSettings.voiceCommandsEnabled
+          };
+          setSettings(validSettings);
         }
       } catch (error) {
         console.error("Failed to load accessibility settings from localStorage:", error);
-        // Optionally, you might want to reset to defaultSettings or handle the error
+        // Keep default settings on error
+      } finally {
+        setIsInitialized(true);
       }
+    } else {
+      setIsInitialized(true);
     }
-  }, []); // Empty dependency array: runs only once after initial mount
+  }, []);
 
-  // // Save settings to localStorage whenever they change
-  // useEffect(() => {
-  //   localStorage.setItem('accessibility-settings', JSON.stringify(settings));
-  // }, [settings]);
-
-  // Effect to save settings to localStorage whenever they change (also client-side only)
+  // Save settings to localStorage whenever they change
   useEffect(() => {
-    if (typeof window !== 'undefined') { // Always check for window before accessing localStorage
+    if (isInitialized && typeof window !== 'undefined') {
       try {
         localStorage.setItem('accessibility-settings', JSON.stringify(settings));
       } catch (error) {
         console.error("Failed to save accessibility settings to localStorage:", error);
       }
     }
-  }, [settings]); // Re-run whenever settings change
+  }, [settings, isInitialized]);
 
   // Apply high contrast mode to document
   useEffect(() => {
-    const html = document.documentElement;
-    if (settings.highContrast) {
-      html.classList.add('high-contrast-mode');
-    } else {
-      html.classList.remove('high-contrast-mode');
+    if (typeof document !== 'undefined') {
+      const html = document.documentElement;
+      if (settings.highContrast) {
+        html.classList.add('high-contrast-mode');
+      } else {
+        html.classList.remove('high-contrast-mode');
+      }
     }
   }, [settings.highContrast]);
 
   // Apply text scaling
   useEffect(() => {
-    const html = document.documentElement;
-    const scaleFactor = TEXT_SCALE_FACTORS[settings.textSize];
-    html.style.setProperty('--text-scale-factor', scaleFactor.toString());
+    if (typeof document !== 'undefined') {
+      const html = document.documentElement;
+      const scaleFactor = TEXT_SCALE_FACTORS[settings.textSize];
+      html.style.setProperty('--text-scale-factor', scaleFactor.toString());
+    }
   }, [settings.textSize]);
 
   const updateSettings = (newSettings: Partial<AccessibilitySettings>) => {
@@ -84,18 +90,20 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ ch
   };
 
   const announceToScreenReader = (message: string) => {
-    const announcer = document.getElementById('aria-live-announcer');
-    if (announcer) {
-      announcer.textContent = message;
-      // Clear the message after a short delay to allow for multiple announcements
-      setTimeout(() => {
-        announcer.textContent = '';
-      }, 1000);
+    if (typeof document !== 'undefined') {
+      const announcer = document.getElementById('aria-live-announcer');
+      if (announcer) {
+        announcer.textContent = message;
+        // Clear the message after a short delay to allow for multiple announcements
+        setTimeout(() => {
+          announcer.textContent = '';
+        }, 1000);
+      }
     }
   };
 
   const triggerHapticFeedback = (type: 'success' | 'error' | 'warning' | 'tap') => {
-    if (navigator.vibrate) {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
       const pattern = HAPTIC_PATTERNS[type];
       navigator.vibrate(pattern);
     }

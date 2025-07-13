@@ -5,13 +5,64 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+/* CSS Custom Properties for Accessibility */
+:root {
+  --text-scale-factor: 1;
+  --high-contrast-bg: #ffffff;
+  --high-contrast-text: #000000;
+  --high-contrast-primary: #0000ff;
+  --high-contrast-border: #000000;
+  --high-contrast-focus: #ff00ff;
+}
+
+/* High Contrast Mode Variables */
+.high-contrast-mode {
+  --high-contrast-bg: #000000;
+  --high-contrast-text: #ffffff;
+  --high-contrast-primary: #ffff00;
+  --high-contrast-border: #ffffff;
+  --high-contrast-focus: #ffff00;
+}
+
 html,
 body {
   @apply bg-white dark:bg-gray-950;
+  font-size: calc(16px * var(--text-scale-factor));
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+}
+
+/* High Contrast Mode Styles */
+.high-contrast-mode {
+  background-color: var(--high-contrast-bg) !important;
+  color: var(--high-contrast-text) !important;
+}
+
+.high-contrast-mode * {
+  background-color: var(--high-contrast-bg) !important;
+  color: var(--high-contrast-text) !important;
+  border-color: var(--high-contrast-border) !important;
+}
+
+.high-contrast-mode .text-primary,
+.high-contrast-mode .bg-primary {
+  color: var(--high-contrast-primary) !important;
+  background-color: var(--high-contrast-primary) !important;
+}
+
+.high-contrast-mode .text-text-DEFAULT {
+  color: var(--high-contrast-text) !important;
+}
+
+.high-contrast-mode .bg-background-card {
+  background-color: var(--high-contrast-bg) !important;
+  border-color: var(--high-contrast-border) !important;
+}
+
+.high-contrast-mode .border-border-DEFAULT {
+  border-color: var(--high-contrast-border) !important;
 }
 
 /* Global styles for Sui Digital Wallet */
@@ -29,7 +80,7 @@ body {
 
 /* High contrast mode focus styles */
 .high-contrast-mode *:focus {
-  outline: 3px solid #FF00FF;
+  outline: 3px solid var(--high-contrast-focus) !important;
   outline-offset: 3px;
 }
 
@@ -58,15 +109,15 @@ body {
 
 /* High contrast scrollbar */
 .high-contrast-mode ::-webkit-scrollbar-track {
-  background: #000000;
+  background: var(--high-contrast-bg) !important;
 }
 
 .high-contrast-mode ::-webkit-scrollbar-thumb {
-  background: #FFFFFF;
+  background: var(--high-contrast-text) !important;
 }
 
 .high-contrast-mode ::-webkit-scrollbar-thumb:hover {
-  background: #FFFF00;
+  background: var(--high-contrast-primary) !important;
 }
 
 /* Animation for loading states */

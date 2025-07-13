@@ -17,7 +17,7 @@ import { WALLET_CONFIG } from '../types';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
+    { title: "SUI Digital Wallet" },
     { name: "description", content: "Welcome to React Router!" },
   ];
 }

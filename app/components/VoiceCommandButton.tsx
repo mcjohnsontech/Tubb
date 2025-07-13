@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff } from 'lucide-react';
 import type { VoiceCommandButtonProps } from '../types';
 import { useAccessibility } from '../contexts/AccessibilityContext';
@@ -18,13 +18,21 @@ const VoiceCommandButton: React.FC<VoiceCommandButtonProps> = ({
   disabled = false 
 }) => {
   const [recognition, setRecognition] = useState<any>(null);
+  const [isSupported, setIsSupported] = useState(false);
   const { announceToScreenReader, triggerHapticFeedback } = useAccessibility();
+  const isListeningRef = useRef(isListening);
+
+  // Update ref when prop changes
+  useEffect(() => {
+    isListeningRef.current = isListening;
+  }, [isListening]);
 
   // Initialize speech recognition
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (SpeechRecognition) {
+      setIsSupported(true);
       const recognitionInstance = new SpeechRecognition();
       recognitionInstance.continuous = false;
       recognitionInstance.interimResults = false;
@@ -42,11 +50,16 @@ const VoiceCommandButton: React.FC<VoiceCommandButtonProps> = ({
         if (transcript.includes('check balance')) {
           triggerHapticFeedback('success');
           announceToScreenReader('Checking balance...');
-          // This will be handled by the parent component
-          onToggle(); // Stop listening
+          // Stop listening after successful command
+          recognitionInstance.stop();
+          onToggle(); // Notify parent to stop listening state
         } else {
           triggerHapticFeedback('warning');
           announceToScreenReader('Command not recognized. Please say "check balance".');
+          // Continue listening for correct command
+          if (isListeningRef.current) {
+            recognitionInstance.start();
+          }
         }
       };
       
@@ -54,36 +67,48 @@ const VoiceCommandButton: React.FC<VoiceCommandButtonProps> = ({
         console.error('Speech recognition error:', event.error);
         triggerHapticFeedback('error');
         announceToScreenReader('Voice recognition error. Please try again.');
-        onToggle(); // Stop listening
+        onToggle(); // Stop listening on error
       };
       
       recognitionInstance.onend = () => {
-        if (isListening) {
-          // Restart if still supposed to be listening
-          recognitionInstance.start();
+        // Only restart if still supposed to be listening and no error occurred
+        if (isListeningRef.current) {
+          // Small delay before restarting to prevent rapid restarts
+          setTimeout(() => {
+            if (isListeningRef.current) {
+              recognitionInstance.start();
+            }
+          }, 100);
         }
       };
       
       setRecognition(recognitionInstance);
+    } else {
+      setIsSupported(false);
     }
-  }, [isListening, onToggle, announceToScreenReader, triggerHapticFeedback]);
+  }, [onToggle, announceToScreenReader, triggerHapticFeedback]);
+
+  // Handle listening state changes
+  useEffect(() => {
+    if (recognition && isSupported) {
+      if (isListening) {
+        recognition.start();
+      } else {
+        recognition.stop();
+      }
+    }
+  }, [isListening, recognition, isSupported]);
 
   const handleToggle = () => {
-    if (!recognition) {
+    if (!isSupported) {
       announceToScreenReader('Voice recognition is not supported in this browser.');
       return;
-    }
-    
-    if (isListening) {
-      recognition.stop();
-    } else {
-      recognition.start();
     }
     
     onToggle();
   };
 
-  if (!recognition) {
+  if (!isSupported) {
     return (
       <button
         disabled
