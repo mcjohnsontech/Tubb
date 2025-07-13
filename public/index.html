@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sui Digital Wallet - Accessible & Inclusive</title>
+  <meta name="description" content="An accessible digital wallet for the Sui blockchain with disability-inclusive features" />
+  
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'inter': ['Inter', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              DEFAULT: '#2563eb',
+              light: '#60a5fa',
+              dark: '#1e40af',
+              accessibleText: '#FFFFFF'
+            },
+            secondary: {
+              DEFAULT: '#10b981',
+              light: '#6ee7b7',
+              dark: '#047857',
+              accessibleText: '#FFFFFF'
+            },
+            neutral: {
+              50: '#f9fafb',
+              100: '#f3f4f6',
+              200: '#e5e7eb',
+              300: '#d1d5db',
+              400: '#9ca3af',
+              500: '#6b7280',
+              600: '#4b5563',
+              700: '#374151',
+              800: '#1f2937',
+              900: '#111827',
+              accessibleText: '#FFFFFF'
+            },
+            success: {
+              DEFAULT: '#10B981',
+              background: '#D1FAE5',
+              text: '#065F46'
+            },
+            error: {
+              DEFAULT: '#EF4444',
+              background: '#FEE2E2',
+              text: '#991B1B'
+            },
+            warning: {
+              DEFAULT: '#F59E0B',
+              background: '#FEF3C7',
+              text: '#92400E'
+            },
+            info: {
+              DEFAULT: '#3B82F6',
+              background: '#DBEAFE',
+              text: '#1E40AF'
+            },
+            text: {
+              DEFAULT: '#111827',
+              light: '#6B7280',
+              inverted: '#FFFFFF'
+            },
+            background: {
+              DEFAULT: '#F9FAFB',
+              card: '#FFFFFF',
+              dark: '#111827'
+            },
+            border: {
+              DEFAULT: '#E5E7EB',
+              focus: '#2563eb'
+            },
+            highContrast: {
+              background: '#000000',
+              text: '#FFFFFF',
+              primary: '#FFFF00',
+              secondary: '#00FFFF',
+              error: '#FF0000',
+              success: '#00FF00',
+              focusRing: '#FF00FF'
+            }
+          },
+          borderRadius: {
+            'xl': '0.75rem',
+            '2xl': '1rem',
+            '3xl': '1.5rem',
+          },
+          boxShadow: {
+            'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    /* Global CSS Variables for Accessibility */
+    :root {
+      --base-font-size: 1rem;
+      --text-scale-factor: 1.0;
+    }
+    
+    /* High Contrast Mode */
+    .high-contrast-mode {
+      background-color: #000000 !important;
+      color: #FFFFFF !important;
+    }
+    
+    .high-contrast-mode * {
+      background-color: #000000 !important;
+      color: #FFFFFF !important;
+      border-color: #FFFFFF !important;
+    }
+    
+    .high-contrast-mode .bg-primary {
+      background-color: #FFFF00 !important;
+      color: #000000 !important;
+    }
+    
+    .high-contrast-mode .bg-secondary {
+      background-color: #00FFFF !important;
+      color: #000000 !important;
+    }
+    
+    .high-contrast-mode .bg-error {
+      background-color: #FF0000 !important;
+      color: #FFFFFF !important;
+    }
+    
+    .high-contrast-mode .bg-success {
+      background-color: #00FF00 !important;
+      color: #000000 !important;
+    }
+    
+    .high-contrast-mode .focus\\:ring-border-focus:focus {
+      box-shadow: 0 0 0 3px #FF00FF !important;
+    }
+    
+    /* Text Scaling */
+    html {
+      font-size: calc(var(--base-font-size) * var(--text-scale-factor));
+    }
+    
+    /* Visually Hidden for Screen Readers */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body class="font-inter bg-background-DEFAULT text-text-DEFAULT antialiased">
+  <div id="root"></div>
+  
+  <!-- ARIA Live Announcer for Screen Readers -->
+  <div 
+    id="aria-live-announcer" 
+    aria-live="polite" 
+    aria-atomic="true" 
+    class="sr-only"
+  ></div>
+  
+  <!-- Script will be injected by Vite -->
+</body>
+</html> 

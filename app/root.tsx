@@ -9,6 +9,7 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { AccessibilityProvider } from "./contexts/AccessibilityContext";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -34,6 +35,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <div
+          id="aria-live-announcer"
+          aria-live="polite"
+          aria-atomic="true"
+          className="sr-only"
+        />
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -42,7 +49,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <AccessibilityProvider>
+      <Outlet />
+    </AccessibilityProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
